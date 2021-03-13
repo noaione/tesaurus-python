@@ -130,3 +130,6 @@ dmypy.json
 
 # Generated dataset dumps
 _dumps/
+
+# VSCode
+.vscode
