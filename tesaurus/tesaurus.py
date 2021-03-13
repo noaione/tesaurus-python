@@ -43,7 +43,7 @@ class Tesaurus:
         valid_kelas = ["adverbia", "konjungsi", "nomina", "numeralia", "partikel", "verba"]
         if isinstance(self.kelas_kata, str):
             if self.kelas_kata not in valid_kelas:
-                raise TesaurusKelasTidakDiketahui(self.kelas_kata)
+                raise KelasKataTidakDiketahui(self.kelas_kata)
             base_url += f"/{self.kelas_kata}"
         return base_url
 
@@ -86,7 +86,7 @@ class TerjadiKesalahan(TesaurusGalat):
         )
 
 
-class TesaurusKelasTidakDiketahui(TesaurusGalat):
+class KelasKataTidakDiketahui(TesaurusGalat):
     def __init__(self, filter_user: str) -> None:
         super().__init__(f"Kelas kata {filter_user} tidak diketahui.")
 
