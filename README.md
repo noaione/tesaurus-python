@@ -17,6 +17,7 @@
 - [x] Support Asynchrounous agar bisa digunakan di fungsi async ([`TesaurusAsync`](https://github.com/noaione/tesaurus-python/blob/master/tesaurus/tesaurus.py#L131))
 - [x] CLI Support, agar tidak usah import manual
 - [x] Batasi hasil ke kelas kata tertentu
+- [x] Lihat hasil terkait.
 
 ## Requirements
 - Python 3.6+
