@@ -22,6 +22,16 @@ __author_mail__ = "noaione0809@gmail.com"
 __version__ = "0.1.0"
 
 
+class Lema(t.NamedTuple):
+    label: str
+    sublabel: t.Union[str, None]
+    lema: t.List[str]
+
+    def to_dict(self):
+        """Ubah NamedTuple Lema ke dictionary"""
+        return {"label": self.label, "sublabel": self.sublabel, "lema": self.lema}
+
+
 class Tesaurus:
     """Objek utama modul Tesaurus"""
 
@@ -38,8 +48,8 @@ class Tesaurus:
 
         self.kata: str
         self.kelas_kata: str
-        self.hasil: t.List[LemaEntri] = []
-        self.saran: t.List[LemaEntri] = []
+        self._entri: t.List[LemaEntri] = []
+        self._terkait: t.List[LemaEntri] = []
 
         self._on_queue = False
 
@@ -47,6 +57,14 @@ class Tesaurus:
             self.sesi = sesi
         else:
             self.sesi = requests.Session()
+
+    @property
+    def entri(self):
+        return self._entri
+
+    @property
+    def terkait(self):
+        return self._terkait
 
     def tutup(self):
         """Tutup koneksi dan bersihkan queue!"""
@@ -80,6 +98,7 @@ class Tesaurus:
         try:
             self._logger.debug("Mengumpulkan hasil...")
             self._buat_entri(laman.text)
+            self._buat_terkait(laman.text)
         except TesaurusGalat as errtg:
             self._on_queue = False
             self._logger.error(f"Sebuah galat terjadi, {str(errtg)}")
@@ -88,8 +107,8 @@ class Tesaurus:
 
     def _reset_data(self):
         """Jangan dipakai, ini merupakan fungsi internal yang akan dipanggil otomatis"""
-        self.hasil = []
-        self.saran = []
+        self._entri = []
+        self._terkait = []
         self.kata = None
         self.kelas_kata = None
 
@@ -132,11 +151,35 @@ class Tesaurus:
             if not htmlstr and child.get("class")[0] == "result-postag":
                 htmlstr += str(child)
             elif htmlstr and child.get("class")[0] == "result-postag":
-                self.hasil.append(LemaEntri(htmlstr, self.kelas_kata))
+                self._entri.append(LemaEntri(htmlstr, self.kelas_kata))
                 htmlstr = str(child)
             else:
                 htmlstr += str(child)
-        self.hasil.append(LemaEntri(htmlstr, self.kelas_kata))
+        self._entri.append(LemaEntri(htmlstr, self.kelas_kata))
+
+    def _buat_terkait(self, laman: str):
+        """Jangan dipakai, ini merupakan fungsi internal yang akan dipanggil otomatis"""
+        sup = bs4.BeautifulSoup(laman, "html.parser")
+        htmlstr = ""
+        result_related = sup.find("div", {"class": "related"})
+        if result_related:
+            for child in result_related.children:
+                if child.get("class") and child.get("class")[0] == "related-result":
+                    continue
+                if not htmlstr and child.get("class")[0] == "result-postag":
+                    htmlstr += str(child)
+                elif htmlstr and child.get("class")[0] == "result-postag":
+                    try:
+                        self._terkait.append(LemaEntri(htmlstr, self.kelas_kata))
+                    except TesaurusGalat:
+                        self._logger.warning("Gagal memproses salah satu hasil terkait, mengabaikannya...")
+                    htmlstr = str(child)
+                else:
+                    htmlstr += str(child)
+            try:
+                self._terkait.append(LemaEntri(htmlstr, self.kelas_kata))
+            except TesaurusGalat:
+                self._logger.warning("Gagal memproses salah satu hasil terkait, mengabaikannya...")
 
     def serialisasi(self) -> dict:
         """Serialisasi hasil menjadi sebuah objek.
@@ -150,18 +193,22 @@ class Tesaurus:
         tesaurus = {
             "kata": self.kata,
             "pranala": pranala,
-            "entri": [entri.serialisasi() for entri in self.hasil],
+            "entri": [entri.serialisasi() for entri in self._entri],
+            "terkait": [entri.serialisasi() for entri in self._terkait],
         }
         return tesaurus
 
-    def __str__(self) -> str:
+    def __str__(self, terkait=False) -> str:
         if self.kata is None:
             return "Tidak ada kata yang sedang dicari."
         hasil = f"{self.kata}\n"
-        if self.hasil:
-            hasil += "\n\n".join(entri.__str__() for entri in self.hasil)
+        if self._entri:
+            hasil += "\n\n".join(str(entri) for entri in self._entri)
         else:
             hasil += "Tidak ada hasil."
+        if self._terkait and terkait:
+            hasil += "\n\n* Hasil terkait:\n"
+            hasil += "\n\n".join(str(entri) for entri in self._terkait)
         return hasil
 
     def __repr__(self) -> str:
@@ -242,15 +289,40 @@ class TesaurusAsync(Tesaurus):
 
 
 class LemaEntri:
+    """Objek entri untuk koleksi lema pada sebuah kelas kata
+
+    Objek ini tidak dimakud untuk dibuat oleh pengguna.
+    """
+
     def __init__(self, hasil_html: str, kelas_kata: str = None):
+        """Buat objek Entri baru
+
+        Tidak dimaksud untuk dibuat oleh pengguna.
+
+        :param hasil_html: HTML yang mengandung <div> dengan kelas result-set
+                           dan result-postag jika ada
+        :type hasil_html: str
+        :param kelas_kata: kelas kata pengganti jika result-postag tidak ada, defaults to None
+        :type kelas_kata: str, optional
+        :raises TesaurusGalat: Jika tidak ada result-postag di HTML dan kelas_kata tidak diberikan.s
+        """
         self._sup = bs4.BeautifulSoup(hasil_html, "html.parser")
 
         self.kelas_kata: str
         self._init_kelas(kelas_kata)
-        self._entri = []
+        self._entri: t.List[Lema] = []
         result_sets = self._sup.find_all("div", {"class": "result-set"})
         if result_sets:
             self._init_hasil(result_sets)
+
+    @property
+    def entri(self) -> t.List[Lema]:
+        """Koleksi Lema yang sudah diproses.
+
+        :return: koleksi lema
+        :rtype: t.List[Lema]
+        """
+        return self.entri
 
     def _init_kelas(self, kelas_kata: str = None):
         postag: t.Union[bs4.element.Tag, None] = self._sup.find("div", {"class": "result-postag"})
@@ -280,10 +352,16 @@ class LemaEntri:
                         continue
                     koleksi_lema.append(lema.text.rstrip().lower())
             tabel["lema"] = koleksi_lema
-            self._entri.append(tabel)
+            self._entri.append(Lema(**tabel))
 
-    def serialisasi(self):
-        return {"kelas": self.kelas_kata, "entri": self._entri}
+    def serialisasi(self) -> t.Dict[str, t.Any]:
+        """Serialisasi hasil ke objek dictionary
+
+        :return: hasil serilisasi
+        :rtype: t.Dict[str, t.Any]
+        """
+        entri_serialized = [entri.to_dict() for entri in self._entri]
+        return {"kelas": self.kelas_kata, "entri": entri_serialized}
 
     def __str__(self):
         hasil = f"[{self.kelas_kata}]\n"
@@ -291,10 +369,10 @@ class LemaEntri:
             hasil += "Tidak ada entri"
             return hasil
         for entri in self._entri:
-            hasil += f" {entri['label']}:"
-            if entri["sublabel"]:
-                hasil += f" ({entri['sublabel']})"
-            hasil += f" {', '.join(entri['lema'])}\n"
+            hasil += f" {entri.label}:"
+            if entri.sublabel:
+                hasil += f" ({entri.sublabel})"
+            hasil += f" {', '.join(entri.lema)}\n"
         return hasil.rstrip("\n")
 
     def __repr__(self) -> str:
