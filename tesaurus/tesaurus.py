@@ -16,6 +16,10 @@ import aiohttp
 import requests
 import bs4
 
+__author__ = "nooione"
+__author_mail__ = "noaione0809@gmail.com"
+__version__ = "0.1.0"
+
 
 class Tesaurus:
     """Objek utama modul Tesaurus"""
