@@ -87,7 +87,7 @@ def cli():
         if args.json:
             print(json.dumps(te.serialisasi(), indent=args.indentasi))
         else:
-            print(te)
+            print(te.__str__(args.terkait))
     except TesaurusGalat as ertg:
         tb = traceback.format_exception(type(ertg), ertg, ertg.__traceback__)
         print("Terjadi kesalahan internal, mohon kontak developer.")
