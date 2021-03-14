@@ -34,7 +34,7 @@ jobs:
         pip install coverage pytest
         coverage run -m pytest tests -v
     - name: Upload coverage to coveralls.io
-      if: matrix.python-version == "3.6"
+      if: matrix.python-version == '3.6'
       run: |
         pip install coveralls
         coveralls
