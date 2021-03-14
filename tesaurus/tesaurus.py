@@ -136,6 +136,7 @@ class Tesaurus:
                 htmlstr = str(child)
             else:
                 htmlstr += str(child)
+        self.hasil.append(LemaEntri(htmlstr, self.kelas_kata))
 
     def serialisasi(self) -> dict:
         """Serialisasi hasil menjadi sebuah objek.
