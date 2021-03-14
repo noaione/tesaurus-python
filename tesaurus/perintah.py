@@ -37,21 +37,27 @@ def cli():
         te.cari(args.kata, args.kelas)
     except KelasKataTidakDiketahui:
         print(f"Kelas kata {args.kelas} tidak diketahui.")
+        te.tutup()
         sys.exit(1)
     except TidakDitemukan:
         hasil = f"Tidak dapat menemukan kata {args.kata}"
         if args.kelas:
             hasil += f" di kelas kata {args.kelas}"
         print(hasil + ".")
+        te.tutup()
         sys.exit(1)
     except TerjadiKesalahan:
         print("Terjadi kesalahan ketika ingin berkomunikasi dengan Tesaurus Tematis")
+        te.tutup()
         sys.exit(1)
     except TesaurusGalat as ertg:
         tb = traceback.format_exception(type(ertg), ertg, ertg.__traceback__)
         print("Terjadi kesalahan internal, mohon kontak developer.")
         print("".join(tb))
+        te.tutup()
         sys.exit(1)
+
+    te.tutup()
 
     try:
         if args.json:
