@@ -246,7 +246,7 @@ class TesaurusAsync(Tesaurus):
             await asyncio.sleep(0.2)  # pragma: nocover
         await self.sesi.close()
 
-    async def cari(self, kueri: str, kelas_kata: str):
+    async def cari(self, kueri: str, kelas_kata: str = None):
         self._logger.debug(f"Mencari `{kueri}` dengan kelas kata `{kelas_kata}`")
         self._on_queue = True
         self._reset_data()
