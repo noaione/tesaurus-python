@@ -4,11 +4,11 @@
 <h1 align="center">
     tesaurus-python
 </h1>
-<p align="center"><b>Versi 0.1.0</b><br>Sebuah modul Python untuk mengambil informasi Tesaurus dari Tesaurus Tematis Kemendikbud (http://tesaurus.kemdikbud.go.id/)
+<p align="center"><b>Versi 0.1.0</b><br>Sebuah modul Python untuk mengambil informasi Tesaurus dari Tesaurus Tematis Kemdikbud (http://tesaurus.kemdikbud.go.id/)
 </p>
 
 <div align="center">
-<a href="https://github.com/noaione/tesaurus-python/actions/workflows/test.yml"><img src="https://github.com/noaione/tesaurus-python/actions/workflows/test.yml/badge.svg" alt="Test CI"></a><a href="https://github.com/noaione/tesaurus-python/blob/master/LICENSE"> <img src="https://img.shields.io/github/license/noaione/tesaurus-python" alt="LICENSE: MIT"></a>
+<a href="https://pypi.org/project/tesaurus/"><img alt="PyPI" src="https://img.shields.io/pypi/v/tesaurus"></a><a href="https://pypi.org/project/tesaurus/"> <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/tesaurus"></a><a href="https://github.com/noaione/tesaurus-python/actions/workflows/test.yml"> <img src="https://github.com/noaione/tesaurus-python/actions/workflows/test.yml/badge.svg" alt="Test CI"></a><a href="https://github.com/noaione/tesaurus-python/blob/master/LICENSE"> <img src="https://img.shields.io/github/license/noaione/tesaurus-python" alt="LICENSE: MIT"></a>
 </div>
 
 ---
@@ -33,7 +33,7 @@ Jika anda ingin berkontribusi, anda juga butuh:
 ## Instalasi
 ### Melalui pypi
 ```bash
-pip install ----
+pip install tesaurus
 ```
 
 ### Manual
@@ -276,10 +276,10 @@ $ tesaurus makan -k -j -i 2
 ```
 
 ## Berkontribusi
-Lihat ...
+Lihat [CONTRIBUTIONS.md](https://github.com/noaione/tesaurus-python/blob/master/README.md)
 
 ## Lisensi
 Modul ini didistribusikan dengan lisensi [MIT](https://github.com/noaione/tesaurus-python/blob/master/LICENSE).
 
-## Penafian
-Akan ditulis
+## Penutup
+Projek ini dibuat untuk keperluan pribadi dan tidak ada afiliasi dengan Kemdikbud. Projek ini mengambil inspirasi dari [kbbi-python](https://github.com/laymonage/kbbi-python) oleh laymonage.
