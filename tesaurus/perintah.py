@@ -3,14 +3,38 @@ import json
 import sys
 import traceback
 
-from .tesaurus import KelasKataTidakDiketahui, TerjadiKesalahan, Tesaurus, TesaurusGalat, TidakDitemukan
+from .tesaurus import (
+    KelasKataTidakDiketahui,
+    TerjadiKesalahan,
+    Tesaurus,
+    TesaurusGalat,
+    TidakDitemukan,
+    __version__,
+    __author__,
+)
 
 
 def cli():
     parser = argparse.ArgumentParser(
-        prog="tesaurus", description="Mencari informasi tesaurus dari Tesaurus Tematis"
+        prog="tesaurus", description="Mencari informasi tesaurus dari Tesaurus Tematis", add_help=False
     )
     parser.add_argument("kata", help="Kata atau kalimat yang ingin dicari")
+    parser.add_argument(
+        "-h",
+        "-b",
+        "--help",
+        "--bantuan",
+        action="help",
+        help="tampilkan pesan bantuan ini dan keluar",
+    )
+    parser.add_argument(
+        "-V",
+        "--versi",
+        "--version",
+        action="version",
+        help="Melihat versi Tesaurus dan keluar",
+        version=f"tesaurus-python versi {__version__}, dibuat oleh {__author__}",
+    )
     parser.add_argument(
         "-t",
         "---dengan-terkait",
@@ -23,7 +47,7 @@ def cli():
         "--kelas-kata",
         help="Batasi hasil ke kelas kata tertentu",
         default=None,
-        choices=["adverbia", "konjungsi", "nomina", "numeralia", "partikel", "verba"],
+        choices=["adjektiva", "adverbia", "konjungsi", "nomina", "numeralia", "partikel", "verba"],
         dest="kelas",
     )
     parser.add_argument("-j", "--json", help="Tampilkan hasil dengan format JSON", action="store_true")
