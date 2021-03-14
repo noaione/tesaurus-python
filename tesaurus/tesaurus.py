@@ -89,7 +89,7 @@ class Tesaurus:
     def _buat_url(self):
         """Jangan dipakai, ini merupakan fungsi internal yang akan dipanggil otomatis"""
         base_url = f"{self.__HOST}/{self.kata}"
-        valid_kelas = ["adverbia", "konjungsi", "nomina", "numeralia", "partikel", "verba"]
+        valid_kelas = ["adjektiva", "adverbia", "konjungsi", "nomina", "numeralia", "partikel", "verba"]
         if isinstance(self.kelas_kata, str):
             if self.kelas_kata not in valid_kelas:
                 self._on_queue = False
