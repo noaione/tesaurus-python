@@ -34,4 +34,4 @@ jobs:
     - name: Lint with isort
       run: |
         pip install isort
-        isort -w 110 .\tesaurus\ --profile black -c
+        isort -w 110 tesaurus --profile black -c
