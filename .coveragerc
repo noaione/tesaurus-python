@@ -1,5 +1,22 @@
 [run]
 branch = True
+omit =
+    # Omit perintah
+    tesaurus/perintah.py
+    # Omit tests
+    tests/*
+    # Omit venv
+    venv/*
+    # Omit dist and build
+    dist/*
+    build/*
+    # Omit generated
+    */__pycache__/*
+    */.mypy_cache/*
+    */.pytest_cache/*
+    # Omit others
+    _dumps/*
+
 
 [report]
 show_missing = True
