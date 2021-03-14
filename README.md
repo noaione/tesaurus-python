@@ -4,7 +4,7 @@
 <h1 align="center">
     tesaurus-python
 </h1>
-<p align="center"><b>Versi 0.1.0</b><br>Sebuah modul Python untuk mengambil informasi Tesaurus dari Tesaurus Tematis Kemdikbud (http://tesaurus.kemdikbud.go.id/)
+<p align="center"><b>Versi 0.1.1</b><br>Sebuah modul Python untuk mengambil informasi Tesaurus dari Tesaurus Tematis Kemdikbud (http://tesaurus.kemdikbud.go.id/)
 </p>
 
 <div align="center">

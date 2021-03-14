@@ -8,3 +8,8 @@ Kodenama: [**DOOG**](https://youtu.be/cQMLWIt9md4?t=824)
 - Support aysncio/async (dengan aiohttp)
 - Support mendapatkan entri lema terkait.
 - Logging support.
+
+### Versi 0.1.1
+Kodenama: [**DOOG**](https://youtu.be/cQMLWIt9md4?t=824) Hotfix
+- Perbaiki typo pada LemaEntri.entri
+- Atur kelas_kata menjadi opsional pada `TesaurusAsync.cari`.
