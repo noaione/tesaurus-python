@@ -25,7 +25,7 @@ __version__ = "0.1.0"
 class Tesaurus:
     """Objek utama modul Tesaurus"""
 
-    __HOST = "https://tesaurus.kemdikbud.go.id/tematis/lema"
+    HOST = "https://tesaurus.kemdikbud.go.id/tematis/lema"
 
     def __init__(self, sesi: requests.Session = None) -> None:
         """Membuat objek Tesaurus baru
@@ -95,7 +95,7 @@ class Tesaurus:
 
     def _buat_url(self):
         """Jangan dipakai, ini merupakan fungsi internal yang akan dipanggil otomatis"""
-        base_url = f"{self.__HOST}/{self.kata}"
+        base_url = f"{self.HOST}/{self.kata}"
         valid_kelas = ["adjektiva", "adverbia", "konjungsi", "nomina", "numeralia", "partikel", "verba"]
         if isinstance(self.kelas_kata, str):
             if self.kelas_kata not in valid_kelas:
