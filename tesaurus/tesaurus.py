@@ -46,8 +46,8 @@ class Tesaurus:
 
         self._logger = logging.getLogger("tesaurus.Tesaurus")
 
-        self.kata: str
-        self.kelas_kata: str
+        self.kata: str = None
+        self.kelas_kata: str = None
         self._entri: t.List[LemaEntri] = []
         self._terkait: t.List[LemaEntri] = []
 
@@ -71,9 +71,9 @@ class Tesaurus:
         import time
 
         while self._on_queue:
-            if not self._on_queue:
+            if not self._on_queue:  # pragma: nocover
                 break
-            time.sleep(0.2)
+            time.sleep(0.2)  # pragma: nocover
         self.sesi.close()
 
     def cari(self, kueri: str, kelas_kata: str = None):
@@ -116,7 +116,7 @@ class Tesaurus:
         """Jangan dipakai, ini merupakan fungsi internal yang akan dipanggil otomatis"""
         base_url = f"{self.HOST}/{self.kata}"
         valid_kelas = ["adjektiva", "adverbia", "konjungsi", "nomina", "numeralia", "partikel", "verba"]
-        if isinstance(self.kelas_kata, str):
+        if hasattr(self, "kelas_kata") and isinstance(self.kelas_kata, str):
             if self.kelas_kata not in valid_kelas:
                 self._on_queue = False
                 self._logger.error(f"Kelas kata {self.kelas_kata} tidak diketahui")
@@ -241,9 +241,9 @@ class TesaurusAsync(Tesaurus):
 
     async def tutup(self):
         while self._on_queue:
-            if not self._on_queue:
+            if not self._on_queue:  # pragma: nocover
                 break
-            await asyncio.sleep(0.2)
+            await asyncio.sleep(0.2)  # pragma: nocover
         await self.sesi.close()
 
     async def cari(self, kueri: str, kelas_kata: str):
@@ -322,7 +322,7 @@ class LemaEntri:
         :return: koleksi lema
         :rtype: t.List[Lema]
         """
-        return self.entri
+        return self._entri
 
     def _init_kelas(self, kelas_kata: str = None):
         postag: t.Union[bs4.element.Tag, None] = self._sup.find("div", {"class": "result-postag"})
