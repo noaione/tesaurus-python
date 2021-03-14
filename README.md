@@ -7,6 +7,10 @@
 <p align="center"><b>Versi 0.1.0</b><br>Sebuah modul Python untuk mengambil informasi Tesaurus dari Tesaurus Tematis Kemendikbud (http://tesaurus.kemdikbud.go.id/)
 </p>
 
+<div align="center">
+<a href="https://github.com/noaione/tesaurus-python/actions/workflows/test.yml"><img src="https://github.com/noaione/tesaurus-python/actions/workflows/test.yml/badge.svg" alt="Test CI"></a><a href="https://github.com/noaione/tesaurus-python/blob/master/LICENSE"> <img src="https://img.shields.io/github/license/noaione/tesaurus-python" alt="LICENSE: MIT"></a>
+</div>
+
 ---
 
 ## Fitur
