@@ -8,7 +8,8 @@
 </p>
 
 <div align="center">
-<a href="https://pypi.org/project/tesaurus/"><img alt="PyPI" src="https://img.shields.io/pypi/v/tesaurus"></a><a href="https://pypi.org/project/tesaurus/"> <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/tesaurus"></a><a href="https://github.com/noaione/tesaurus-python/actions/workflows/test.yml"> <img src="https://github.com/noaione/tesaurus-python/actions/workflows/test.yml/badge.svg" alt="Test CI"></a><a href="https://github.com/noaione/tesaurus-python/blob/master/LICENSE"> <img src="https://img.shields.io/github/license/noaione/tesaurus-python" alt="LICENSE: MIT"></a>
+<a href="https://pypi.org/project/tesaurus/"><img alt="PyPI" src="https://img.shields.io/pypi/v/tesaurus"></a><a href="https://pypi.org/project/tesaurus/"> <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/tesaurus"></a><a href="https://github.com/noaione/tesaurus-python/actions/workflows/test.yml"> <img src="https://github.com/noaione/tesaurus-python/actions/workflows/test.yml/badge.svg" alt="Test CI"></a><a href="https://github.com/noaione/tesaurus-python/blob/master/LICENSE"> <img src="https://img.shields.io/github/license/noaione/tesaurus-python" alt="LICENSE: MIT"></a><a href="https://coveralls.io/github/noaione/tesaurus-python"> <img src="https://coveralls.io/repos/github/noaione/tesaurus-python/badge.svg" alt="Coverage Status" /></a>
+<a href="https://github.com/psf/black"> <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code Style: black"></a>
 </div>
 
 ---
