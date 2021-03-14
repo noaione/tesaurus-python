@@ -1,8 +1,11 @@
+import asyncio
 from types import SimpleNamespace
 
+import aiohttp
 import pytest
 import requests
 from tesaurus import KelasKataTidakDiketahui, Lema, LemaEntri, TerjadiKesalahan, Tesaurus, TidakDitemukan
+from tesaurus.tesaurus import TesaurusAsync
 
 SAMPLE_HTML_1 = """<div class="related"><div class="result-set"><div class="article-label col-lg-2 col-md-2"><a href="http://tesaurus.kemdikbud.go.id/tematis/artikel/Peranti_Makan">PERANTI MAKAN</a></div><div class="one-par col-lg-9 col-md-9"><div class="one-par-content"><a href="http://tesaurus.kemdikbud.go.id/tematis/lema/menempatkan" class="lemma-ordinary">menempatkan</a>, <a href="http://tesaurus.kemdikbud.go.id/tematis/lema/menyajikan" class="lemma-ordinary">menyajikan</a>, <a href="http://tesaurus.kemdikbud.go.id/tematis/lema/menyimpan" class="lemma-ordinary">menyimpan</a>, <a href="http://tesaurus.kemdikbud.go.id/tematis/lema/mewadahi" class="lemma-ordinary">mewadahi</a></div></div></div></div>"""  # noqa: E501
 SAMPLE_HTML_2 = """<div class="related"><div class="result-set"><div class="article-label col-lg-2 col-md-2"><a href="http://tesaurus.kemdikbud.go.id/tematis/artikel/Peranti_Makan">PERANTI MAKAN</a></div><div class="one-par col-lg-9 col-md-9"><div class="one-par-content"><a href="http://tesaurus.kemdikbud.go.id/tematis/lema/menempatkan" class="lemma-ordinary">menempatkan</a>, <a href="http://tesaurus.kemdikbud.go.id/tematis/lema/menyajikan" class="lemma-ordinary">menyajikan</a>, <a href="http://tesaurus.kemdikbud.go.id/tematis/lema/menyimpan" class="lemma-ordinary">menyimpan</a>, <a href="http://tesaurus.kemdikbud.go.id/tematis/lema/mewadahi" class="lemma-ordinary">mewadahi</a></div></div></div><div class="result-postag"><i>verba</i></div><div class="result-set"><div class="article-label col-lg-2 col-md-2"><a href="http://tesaurus.kemdikbud.go.id/tematis/artikel/Peranti_Makan">PERANTI MAKAN</a></div><div class="one-par col-lg-9 col-md-9"><div class="one-par-content"><a href="http://tesaurus.kemdikbud.go.id/tematis/lema/menempatkan" class="lemma-ordinary">menempatkan</a>, <a href="http://tesaurus.kemdikbud.go.id/tematis/lema/menyajikan" class="lemma-ordinary">menyajikan</a>, <a href="http://tesaurus.kemdikbud.go.id/tematis/lema/menyimpan" class="lemma-ordinary">menyimpan</a>, <a href="http://tesaurus.kemdikbud.go.id/tematis/lema/mewadahi" class="lemma-ordinary">mewadahi</a></div></div></div></div>"""  # noqa: E501
@@ -30,6 +33,19 @@ def test_tesaurus_sesi_close():
         if len(adapter.poolmanager.pools) > 0:
             full_closed = False
     assert full_closed is True
+
+
+def test_tesaurusasync_sesi():
+    sample = aiohttp.ClientSession(headers={"Sample-Header": "Mocked"})
+    te = TesaurusAsync(sample)
+    assert te.sesi.headers.get("Sample-Header") == "Mocked"
+
+
+def test_tesaurusasync_sesi_cloes():
+    loop = asyncio.get_event_loop()
+    te = TesaurusAsync(loop=loop)
+    loop.run_until_complete(te.tutup())
+    assert te.sesi.closed is True
 
 
 def test_tesaurus_buat_url():

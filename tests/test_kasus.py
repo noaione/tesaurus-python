@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 
@@ -42,6 +43,24 @@ def test_dengan_kelas_kata():
     kasus = str(read_kasus("makan", "adjektiva")).rstrip("\n")
     te = MockTesaurus()
     te.cari("makan", "adjektiva")
+    res = str(te).rstrip("\n")
+    assert res == kasus
+
+
+def test_async_tanpa_kelas_kata():
+    kasus = str(read_kasus("makan")).rstrip("\n")
+    te = MockTesaurusAsync()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(te.cari("makan"))
+    res = str(te).rstrip("\n")
+    assert res == kasus
+
+
+def test_async_dengan_kelas_kata():
+    kasus = str(read_kasus("makan", "adjektiva")).rstrip("\n")
+    te = MockTesaurusAsync()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(te.cari("makan", "adjektiva"))
     res = str(te).rstrip("\n")
     assert res == kasus
 
@@ -98,6 +117,32 @@ def test_kata_repr_dengan_kelas():
     assert "<Tesaurus: makan [adjektiva]>" == repr(te)
 
 
+def test_tidak_ada_kata_repr():
+    te = MockTesaurus()
+    assert "<Tesaurus: TidakAda>" == repr(te)
+
+
+def test_kata_repr_async():
+    te = MockTesaurusAsync()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(te.cari("makan"))
+    loop.run_until_complete(te.tutup())
+    assert "<TesaurusAsync: makan>" == repr(te)
+
+
+def test_kata_repr_dengan_kelas_async():
+    te = MockTesaurusAsync()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(te.cari("makan", "adjektiva"))
+    loop.run_until_complete(te.tutup())
+    assert "<TesaurusAsync: makan [adjektiva]>" == repr(te)
+
+
+def test_tidak_ada_kata_repr_async():
+    te = MockTesaurusAsync()
+    assert "<TesaurusAsync: TidakAda>" == repr(te)
+
+
 def test_tesaurus_entri():
     te = Tesaurus()
     assert te.entri == []
@@ -118,8 +163,3 @@ def test_tidak_ada_kata_serialisasi():
     with pytest.raises(TesaurusGalat) as excinfo:
         te.serialisasi()
     assert "Tidak ada kata yang sedang dicari" in str(excinfo.value)
-
-
-def test_tidak_ada_kata_repr():
-    te = MockTesaurus()
-    assert "<Tesaurus: TidakAda>" == repr(te)

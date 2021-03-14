@@ -258,7 +258,7 @@ class TesaurusAsync(Tesaurus):
         try:
             self._logger.debug(f"Meminta pranala {laman_url}")
             req = await self.sesi.get(laman_url)
-        except (aiohttp.ClientConnectionError, aiohttp.ClientError, TimeoutError):
+        except (aiohttp.ClientConnectionError, aiohttp.ClientError, TimeoutError):  # pragma: nocover
             self._logger.error("Terjadi kesalahan ketika berkomunikasi dengan Tesaurus Tematis")
             self._on_queue = False
             raise TerjadiKesalahan()
