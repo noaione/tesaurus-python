@@ -14,10 +14,10 @@
 ---
 
 ## Fitur
-- [x] Support Asynchrounous agar bisa digunakan di fungsi async ([`TesaurusAsync`](https://github.com/noaione/tesaurus-python/blob/master/tesaurus/tesaurus.py#L223))
-- [x] CLI Support, agar tidak usah import manual
-- [x] Batasi hasil ke kelas kata tertentu
-- [x] Lihat hasil terkait.
+- Support Asynchrounous agar bisa digunakan di fungsi async ([`TesaurusAsync`](https://github.com/noaione/tesaurus-python/blob/master/tesaurus/tesaurus.py#L223))
+- CLI Support, agar tidak usah import manual
+- Batasi hasil ke kelas kata tertentu
+- Lihat hasil terkait jika tersedia.
 
 ## Requirements
 - Python 3.6+
@@ -276,10 +276,15 @@ $ tesaurus makan -k -j -i 2
 ```
 
 ## Berkontribusi
-Lihat [CONTRIBUTIONS.md](https://github.com/noaione/tesaurus-python/blob/master/README.md)
+Lihat [CONTRIBUTING.md](https://github.com/noaione/tesaurus-python/blob/master/CONTRIBUTING.md)
+
+## Perubahan
+Lihat [CHANGELOG.md](https://github.com/noaione/tesaurus-python/blob/master/CHANGELOG.md)
 
 ## Lisensi
 Modul ini didistribusikan dengan lisensi [MIT](https://github.com/noaione/tesaurus-python/blob/master/LICENSE).
 
 ## Penutup
 Projek ini dibuat untuk keperluan pribadi dan tidak ada afiliasi dengan Kemdikbud. Projek ini mengambil inspirasi dari [kbbi-python](https://github.com/laymonage/kbbi-python) oleh laymonage.
+
+Logo yang dipakai di bagian atas header merupakan [logo favicon](http://tesaurus.kemdikbud.go.id/tematis/styles/img/favicon.ico) dari website [Tesaurus Tematis](http://tesaurus.kemdikbud.go.id/tematis/), logo dibuat ulang di Photoshop dikarenakan resolusi yang rendah. Kredit logo asli merupakan hak milik Kemdikbud.
