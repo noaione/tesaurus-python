@@ -1,4 +1,4 @@
-from tesaurus import Tesaurus, TesaurusAsync, KelasKataTidakDiketahui
+from tesaurus import KelasKataTidakDiketahui, Tesaurus, TesaurusAsync
 
 
 class MockTesaurus(Tesaurus):

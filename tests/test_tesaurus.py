@@ -1,8 +1,8 @@
 import os
 
-from tesaurus import TidakDitemukan
-
 from _mock import MockTesaurus, MockTesaurusAsync
+
+from tesaurus import TidakDitemukan
 
 _KASUS_PATH = os.path.join(os.getcwd(), "tests", "kasus")
 

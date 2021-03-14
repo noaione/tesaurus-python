@@ -9,8 +9,8 @@ from .tesaurus import (
     Tesaurus,
     TesaurusGalat,
     TidakDitemukan,
-    __version__,
     __author__,
+    __version__,
 )
 
 

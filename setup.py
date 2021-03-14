@@ -1,5 +1,6 @@
 import setuptools
-from tesaurus.tesaurus import __version__, __author__, __author_mail__
+
+from tesaurus.tesaurus import __author__, __author_mail__, __version__
 
 with open("README.md", "r", encoding="utf-8") as fp:
     long_desc = fp.read()
