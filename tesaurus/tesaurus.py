@@ -9,15 +9,16 @@
 """
 
 import asyncio
+import typing as t
 from types import SimpleNamespace
 
 import aiohttp
 import requests
-from bs4 import BeautifulSoup
+import bs4
 
 
 class Tesaurus:
-    """Sebuah instansi modul Tesaurus"""
+    """Objek utama modul Tesaurus"""
 
     __HOST = "https://tesaurus.kemdikbud.go.id/tematis/lema"
 
@@ -30,8 +31,8 @@ class Tesaurus:
 
         self.kata: str
         self.kelas_kata: str
-        self.hasil = []
-        self.saran = []
+        self.hasil: t.List[LemaEntri] = []
+        self.saran: t.List[LemaEntri] = []
 
         if isinstance(sesi, (requests.Session, aiohttp.ClientSession)):
             self.sesi = sesi
@@ -87,7 +88,7 @@ class Tesaurus:
 
     def _buat_entri(self, laman: str):
         """Jangan dipakai, ini merupakan fungsi internal yang akan dipanggil otomatis"""
-        sup = BeautifulSoup(laman, "html.parser")
+        sup = bs4.BeautifulSoup(laman, "html.parser")
         htmlstr = ""
         result_contain = sup.find("div", {"class": "contain"})
         for child in result_contain.children:
@@ -99,9 +100,36 @@ class Tesaurus:
             else:
                 htmlstr += str(child)
 
+    def serialisasi(self) -> dict:
+        """Serialisasi hasil menjadi sebuah objek.
+
+        :return: Objek/Dictionary dari Kata yang dicari
+        :rtype: dict
+        """
+        if self.kata is None:
+            raise TesaurusGalat("Tidak ada kata yang sedang dicari")
+        pranala = self._buat_url()
+        tesaurus = {
+            "kata": self.kata,
+            "pranala": pranala,
+            "entri": [entri.serialisasi() for entri in self.hasil],
+        }
+        return tesaurus
+
+    def __str__(self) -> str:
+        hasil = f"{self.kata}\n"
+        hasil += "\n\n".join(entri.__str__() for entri in self.hasil)
+        return hasil
+
+    def __repr__(self) -> str:
+        hasil = self.kata
+        if self.kelas_kata is not None:
+            hasil += f" [{self.kelas_kata}]"
+        return f"<Tesaurus: {hasil}>"
+
 
 class TesaurusAsync(Tesaurus):
-    """Sebuah instansi asynchronous untuk modul Tesaurus"""
+    """Objek utama versi asynchronous untuk modul Tesaurus"""
 
     def __init__(self, sesi: aiohttp.ClientSession = None, loop: asyncio.AbstractEventLoop = None) -> None:
         """Membuat objek Tesaurus Baru untuk dipakai di fungsi async.
@@ -134,10 +162,71 @@ class TesaurusAsync(Tesaurus):
         self._cek_galat(laman)
         self._buat_entri(teks)
 
+    def __repr__(self) -> str:
+        hasil = self.kata
+        if self.kelas_kata is not None:
+            hasil += f" [{self.kelas_kata}]"
+        return f"<TesaurusAsync: {hasil}>"
+
 
 class LemaEntri:
     def __init__(self, hasil_html: str, kelas_kata: str = None):
-        self._sup = BeautifulSoup(hasil_html, "html.parser")
+        self._sup = bs4.BeautifulSoup(hasil_html, "html.parser")
+
+        self.kelas_kata: str
+        self._init_kelas(kelas_kata)
+        self._entri = []
+        result_sets = self._sup.find_all("div", {"class": "result-set"})
+        if result_sets:
+            self._init_hasil(result_sets)
+
+    def _init_kelas(self, kelas_kata: str = None):
+        postag: t.Union[bs4.element.Tag, None] = self._sup.find("div", {"class": "result-postag"})
+        if postag is None and kelas_kata is None:
+            raise TesaurusGalat("Gagal memproses entri, tidak ada kelas kata yang bisa ditemukan!")
+        elif postag is None:
+            self.kelas_kata = kelas_kata
+        else:
+            self.kelas_kata = postag.findChild("i").text.rstrip()
+
+    def _init_hasil(self, result_sets: t.List[bs4.element.Tag]):
+        for hasil in result_sets:
+            tabel = {}
+            label = hasil.find("div", {"class": "article-label"}).findChild("a").text.rstrip().lower()
+            tabel["label"] = label
+            tabel["sublabel"] = None
+            semua_lema: bs4.element.Tag = hasil.find("div", {"class": "one-par-content"})
+            koleksi_lema = []
+            if semua_lema is not None:
+                for lema in semua_lema.children:
+                    if not lema.name:
+                        continue
+                    if lema.name != "a":
+                        continue
+                    if lema.get("class") and lema.get("class")[0] == "lemma-super":
+                        tabel["sublabel"] = lema.text.rstrip().lower()
+                        continue
+                    koleksi_lema.append(lema.text.rstrip().lower())
+            tabel["lema"] = koleksi_lema
+            self._entri.append(tabel)
+
+    def serialisasi(self):
+        return {"kelas": self.kelas_kata, "entri": self._entri}
+
+    def __str__(self):
+        hasil = f"[{self.kelas_kata}]\n"
+        if not self._entri:
+            hasil += "Tidak ada entri"
+            return hasil
+        for entri in self._entri:
+            hasil += f" {entri['label']}:"
+            if entri["sublabel"]:
+                hasil += f" ({entri['sublabel']})"
+            hasil += f" {', '.join(entri['lema'])}\n"
+        return hasil.rstrip("\n")
+
+    def __repr__(self) -> str:
+        return f"<LemaEntri: {self.kelas_kata}, {len(self._entri)} Entri>"
 
 
 class TesaurusGalat(Exception):
