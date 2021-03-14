@@ -34,7 +34,6 @@ jobs:
         pip install coverage pytest
         coverage run -m pytest tests -v
     - name: Upload coverage to coveralls.io
-      if: github.event == 'push'
       run: |
         pip install coveralls
         coveralls
