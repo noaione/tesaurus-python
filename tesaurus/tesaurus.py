@@ -9,12 +9,13 @@
 """
 
 import asyncio
+import logging
 import typing as t
 from types import SimpleNamespace
 
 import aiohttp
-import requests
 import bs4
+import requests
 
 __author__ = "nooione"
 __author_mail__ = "noaione0809@gmail.com"
@@ -32,6 +33,8 @@ class Tesaurus:
         :param sesi: sesi kustom untuk dipakai
         :type sesi: reequest.Session
         """
+
+        self._logger = logging.getLogger("tesaurus.Tesaurus")
 
         self.kata: str
         self.kelas_kata: str
@@ -63,6 +66,7 @@ class Tesaurus:
         :param kelas_kata: kelas kata, defaults to None
         :type kelas_kata: str, optional
         """
+        self._logger.debug(f"Mencari `{kueri}` dengan kelas kata `{kelas_kata}`")
         self._on_queue = True
         self._reset_data()
         self.kata = kueri
@@ -70,12 +74,15 @@ class Tesaurus:
             kelas_kata = kelas_kata.lower()
         self.kelas_kata = kelas_kata
         laman_url = self._buat_url()
+        self._logger.debug(f"Meminta pranala {laman_url}")
         laman = self.sesi.get(laman_url)
         self._cek_galat(laman)
         try:
+            self._logger.debug("Mengumpulkan hasil...")
             self._buat_entri(laman.text)
         except TesaurusGalat as errtg:
             self._on_queue = False
+            self._logger.error(f"Sebuah galat terjadi, {str(errtg)}")
             raise TesaurusGalat(str(errtg))
         self._on_queue = False
 
@@ -93,22 +100,27 @@ class Tesaurus:
         if isinstance(self.kelas_kata, str):
             if self.kelas_kata not in valid_kelas:
                 self._on_queue = False
+                self._logger.error(f"Kelas kata {self.kelas_kata} tidak diketahui")
                 raise KelasKataTidakDiketahui(self.kelas_kata)
             base_url += f"/{self.kelas_kata}"
         return base_url
 
     def _cek_galat(self, laman: requests.Response):
         """Jangan dipakai, ini merupakan fungsi internal yang akan dipanggil otomatis"""
+        self._logger.debug("Memerika galat pada pranala tadi...")
         if laman.status_code != 200:
             self._on_queue = False
             if laman.status_code == 404:
+                self._logger.error("Tidak dapat hasil")
                 raise TidakDitemukan(self.kata, self.kelas_kata)
+            self._logger.error("Terjadi kesalahan ketika berkomunikasi dengan Tesaurus Tematis")
             raise TerjadiKesalahan()
         not_found_text = "dari semua kelas kata tidak ditemukan"
         if isinstance(self.kelas_kata, str):
             not_found_text = f"dari kelas kata {self.kelas_kata} tidak ditemukan"
         if not_found_text in laman.text:
             self._on_queue = False
+            self._logger.error("Tidak ada hasil")
             raise TidakDitemukan(self.kata, self.kelas_kata)
 
     def _buat_entri(self, laman: str):
@@ -142,11 +154,18 @@ class Tesaurus:
         return tesaurus
 
     def __str__(self) -> str:
+        if self.kata is None:
+            return "Tidak ada kata yang sedang dicari."
         hasil = f"{self.kata}\n"
-        hasil += "\n\n".join(entri.__str__() for entri in self.hasil)
+        if self.hasil:
+            hasil += "\n\n".join(entri.__str__() for entri in self.hasil)
+        else:
+            hasil += "Tidak ada hasil."
         return hasil
 
     def __repr__(self) -> str:
+        if not self.kata:
+            return "<Tesaurus: TidakAda>"
         hasil = self.kata
         if self.kelas_kata is not None:
             hasil += f" [{self.kelas_kata}]"
@@ -165,6 +184,7 @@ class TesaurusAsync(Tesaurus):
         super().__init__()
         if not isinstance(loop, asyncio.AbstractEventLoop):
             loop = asyncio.get_event_loop()
+        self._logger = logging.getLogger("tesaurus.TesaurusAsync")
         self._loop = loop
         if isinstance(sesi, aiohttp.ClientSession):
             self.sesi = sesi
@@ -179,6 +199,8 @@ class TesaurusAsync(Tesaurus):
         await self.sesi.close()
 
     async def cari(self, kueri: str, kelas_kata: str):
+        self._logger.debug(f"Mencari `{kueri}` dengan kelas kata `{kelas_kata}`")
+        self._on_queue = True
         self._reset_data()
         self.kata = kueri
         if isinstance(kelas_kata, str):
@@ -186,20 +208,32 @@ class TesaurusAsync(Tesaurus):
         self.kelas_kata = kelas_kata
         laman_url = self._buat_url()
         try:
+            self._logger.debug(f"Meminta pranala {laman_url}")
             req = await self.sesi.get(laman_url)
         except (aiohttp.ClientConnectionError, aiohttp.ClientError, TimeoutError):
+            self._logger.error("Terjadi kesalahan ketika berkomunikasi dengan Tesaurus Tematis")
+            self._on_queue = False
             raise TerjadiKesalahan()
         teks = await req.text()
         # Buat namespace yang mirip seperti requests.get()
         laman = SimpleNamespace(text=teks, status_code=req.status)
         self._cek_galat(laman)
-        self._buat_entri(teks)
+        try:
+            self._logger.debug("Mengumpulkan hasil...")
+            self._buat_entri(teks)
+        except TesaurusGalat as errtg:
+            self._on_queue = False
+            self._logger.error(f"Sebuah galat terjadi, {str(errtg)}")
+            raise TesaurusGalat(str(errtg))
+        self._on_queue = False
 
     def __del__(self):
         if not self.sesi.closed:
             self._loop.run_until_complete(self.sesi.close())
 
     def __repr__(self) -> str:
+        if not self.kata:
+            return "<TesaurusAsync: TidakAda>"
         hasil = self.kata
         if self.kelas_kata is not None:
             hasil += f" [{self.kelas_kata}]"
