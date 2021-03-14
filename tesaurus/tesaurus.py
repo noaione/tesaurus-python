@@ -17,7 +17,7 @@ import aiohttp
 import bs4
 import requests
 
-__author__ = "nooione"
+__author__ = "noaione"
 __author_mail__ = "noaione0809@gmail.com"
 __version__ = "0.1.0"
 
