@@ -85,6 +85,9 @@ class Tesaurus:
         :type kelas_kata: str, optional
         """
         self._logger.debug(f"Mencari `{kueri}` dengan kelas kata `{kelas_kata}`")
+        if kueri == self.kata and kelas_kata == self.kelas_kata:
+            self._logger.debug("Terdapat cache dari pencarian sebelumnya, silakan gunakan cache")
+            return
         self._on_queue = True
         self._reset_data()
         self.kata = kueri
@@ -248,6 +251,9 @@ class TesaurusAsync(Tesaurus):
 
     async def cari(self, kueri: str, kelas_kata: str = None):
         self._logger.debug(f"Mencari `{kueri}` dengan kelas kata `{kelas_kata}`")
+        if kueri == self.kata and kelas_kata == self.kelas_kata:
+            self._logger.debug("Terdapat cache dari pencarian sebelumnya, silakan gunakan cache")
+            return
         self._on_queue = True
         self._reset_data()
         self.kata = kueri

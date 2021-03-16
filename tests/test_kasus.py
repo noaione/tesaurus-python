@@ -47,6 +47,16 @@ def test_dengan_kelas_kata():
     assert res == kasus
 
 
+def test_kata_cache():
+    kasus = str(read_kasus("makan")).rstrip("\n")
+    te = MockTesaurus()
+    te.cari("makan")
+    res_old = str(te).rstrip("\n")
+    te.cari("makan")
+    res_new = str(te).rstrip("\n")
+    assert res_old == kasus and res_new == res_old
+
+
 def test_async_tanpa_kelas_kata():
     kasus = str(read_kasus("makan")).rstrip("\n")
     te = MockTesaurusAsync()
@@ -63,6 +73,17 @@ def test_async_dengan_kelas_kata():
     loop.run_until_complete(te.cari("makan", "adjektiva"))
     res = str(te).rstrip("\n")
     assert res == kasus
+
+
+def test_async_kata_cache():
+    kasus = str(read_kasus("makan")).rstrip("\n")
+    te = MockTesaurusAsync()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(te.cari("makan"))
+    res_old = str(te).rstrip("\n")
+    loop.run_until_complete(te.cari("makan"))
+    res_new = str(te).rstrip("\n")
+    assert res_old == kasus and res_new == res_old
 
 
 def test_kata_dengan_terkait():
