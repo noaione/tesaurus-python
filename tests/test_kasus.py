@@ -184,3 +184,18 @@ def test_tidak_ada_kata_serialisasi():
     with pytest.raises(TesaurusGalat) as excinfo:
         te.serialisasi()
     assert "Tidak ada kata yang sedang dicari" in str(excinfo.value)
+
+
+def test_kelas_kata_tidak_ada():
+    te = MockTesaurus()
+    with pytest.raises(TesaurusGalat) as excinfo:
+        te.cari("main")
+    assert "Gagal memproses entri, tidak ada kelas kata yang bisa ditemukan!" in str(excinfo.value)
+
+
+def test_async_kelas_kata_tidak_ada():
+    te = MockTesaurusAsync()
+    loop = asyncio.get_event_loop()
+    with pytest.raises(TesaurusGalat) as excinfo:
+        loop.run_until_complete(te.cari("main"))
+    assert "Gagal memproses entri, tidak ada kelas kata yang bisa ditemukan!" in str(excinfo.value)
