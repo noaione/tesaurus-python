@@ -19,7 +19,7 @@ import requests
 
 __author__ = "noaione"
 __author_mail__ = "noaione0809@gmail.com"
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 
 class Lema(t.NamedTuple):
